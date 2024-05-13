@@ -2,14 +2,21 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.Email;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.annotation.UserBirthdayConstraint;
+import ru.yandex.practicum.filmorate.annotation.UserEmailConstraint;
+import ru.yandex.practicum.filmorate.annotation.UserLoginConstraint;
+
 import java.time.LocalDate;
 
 @Data
 public class User {
-    long id;
+    private long id;
     @Email
-    String email;
-    String login;
-    String name;
-    LocalDate birthday;
+    @UserEmailConstraint
+    private String email;
+    @UserLoginConstraint
+    private String login;
+    private String name;
+    @UserBirthdayConstraint
+    private LocalDate birthday;
 }
