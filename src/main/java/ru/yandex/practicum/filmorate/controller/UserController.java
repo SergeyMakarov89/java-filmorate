@@ -15,7 +15,7 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     private final Map<Long, User> users = new HashMap<>();
-    long currentNewId = 0;
+    private long currentNewId = 0;
 
     @GetMapping
     public Collection<User> findAll() {
@@ -64,7 +64,7 @@ public class UserController {
     }
 
     private long getNextId() {
-        log.trace("Определили currentNewId в текущий момент");
+        log.info("Определили currentNewId в текущий момент");
         return ++currentNewId;
     }
 

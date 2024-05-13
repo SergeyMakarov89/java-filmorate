@@ -15,7 +15,7 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
-    long currentNewId = 0;
+    private long currentNewId = 0;
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -51,7 +51,7 @@ public class FilmController {
     }
 
     private long getNextId() {
-        log.trace("Определили currentNewId в текущий момент");
+        log.info("Определили currentNewId в текущий момент");
         return ++currentNewId;
     }
 }
