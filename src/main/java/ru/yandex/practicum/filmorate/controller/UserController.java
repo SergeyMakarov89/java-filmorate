@@ -2,70 +2,75 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final Map<Long, User> users = new HashMap<>();
-    private long currentNewId = 0;
+
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Collection<User> findAll() {
-        return users.values();
+        return userService.findAll();
+    }
+
+    @GetMapping("/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public User findUserById(@PathVariable Long userId) {
+        return userService.findUserById(userId);
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public User create(@Valid @RequestBody(required = true) User user) {
-        if (user.getName() == null) {
-            log.debug("Имя пустое при создании пользователя");
-            user.setName(user.getLogin());
-            log.info("Присвоели имени нового пользователя значение логина при создании пользователя");
-        }
-        user.setId(getNextId());
-        log.info("Присвоели Id новому пользователю");
-        users.put(user.getId(), user);
-        log.info("Положили нового пользователя в коллекцию");
-        return user;
+        return userService.create(user);
     }
 
 
     @PutMapping
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public User update(@Valid @RequestBody(required = true) User newUser) {
-
-        if (users.containsKey(newUser.getId())) {
-            User updatedUser = users.get(newUser.getId());
-            log.debug("Создали updatedUser и присвоели ему значение соотвествоющие такому же Id нового пользователя");
-            updatedUser.setEmail(newUser.getEmail());
-            log.info("Присвоели электронную почту updatedUser из newUser");
-            updatedUser.setLogin(newUser.getLogin());
-            log.info("Присвоели логин updatedUser из newUser");
-            if (newUser.getName() == null) {
-                log.debug("Имя пустое при обновлении пользователя");
-                newUser.setName(newUser.getLogin());
-                log.info("Присвоели имени нового пользователя значение логина при обновлении пользователя");
-            } else {
-                updatedUser.setName(newUser.getName());
-                log.info("Присвоели имя updatedUser из newUser");
-            }
-            updatedUser.setBirthday(newUser.getBirthday());
-            log.info("Присвоели день рождения updatedUser из newUser");
-            return updatedUser;
-        }
-        log.error("Пользователь с id = " + newUser.getId() + " не найден в коллекции");
-        throw new ValidationException("Пользователь с id = " + newUser.getId() + " не найден");
+        return userService.update(newUser);
     }
 
-    private long getNextId() {
-        log.info("Определили currentNewId в текущий момент");
-        return ++currentNewId;
+    @PutMapping("/{userId}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Collection<User> addFriendToUser(@PathVariable Long userId,
+                                @PathVariable Long friendId) {
+        return userService.addFriendToUser(userId, friendId);
     }
 
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Collection<User> deleteFriend(@PathVariable Long userId,
+                                @PathVariable Long friendId) {
+        return userService.deleteFriend(userId, friendId);
+    }
+
+    @GetMapping("/{userId}/friends")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<User> getFriends(@PathVariable Long userId) {
+        return userService.getFriends(userId);
+    }
+
+    @GetMapping("/{userId}/friends/common/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<User> getCommonFriends(@PathVariable Long userId,
+                                         @PathVariable Long friendId) {
+        return userService.getCommonFriends(userId, friendId);
+    }
 }
