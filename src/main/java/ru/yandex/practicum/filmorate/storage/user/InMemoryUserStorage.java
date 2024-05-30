@@ -145,7 +145,7 @@ public class InMemoryUserStorage implements UserStorage {
                     }
                     return userList;
                 } else {
-                    return null;
+                    return new ArrayList<>();
                 }
             } else {
                 log.error("Пользователь с id = " + userId + " не найден в коллекции");
