@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -112,17 +114,27 @@ public class InMemoryUserStorage implements UserStorage {
     public Collection<User> deleteFriend(Long userId, Long friendId) {
         if (userId != null && friendId != null) {
             if (users.containsKey(userId) && users.containsKey(friendId)) {
-                users.get(userId).getFriends().remove(friendId);
-                log.debug("Удалили у пользователя с id:" + userId + " друга с id:" + friendId);
-                users.get(friendId).getFriends().remove(userId);
-                log.debug("Удалили у друга с id:" + friendId + " пользователя с id:" + userId);
-                List<User> userList = new ArrayList<>();
-                log.debug("Создали новый список userList для http-ответа");
-                userList.add(users.get(userId));
-                log.debug("Добавили в список пользователя с id: " + userId + " для http-ответа");
-                userList.add(users.get(friendId));
-                log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
-                return userList;
+                if (users.get(userId).getFriends().contains(friendId)) {
+                    users.get(userId).getFriends().remove(friendId);
+                    log.debug("Удалили у пользователя с id:" + userId + " друга с id:" + friendId);
+                    users.get(friendId).getFriends().remove(userId);
+                    log.debug("Удалили у друга с id:" + friendId + " пользователя с id:" + userId);
+                    List<User> userList = new ArrayList<>();
+                    log.debug("Создали новый список userList для http-ответа");
+                    userList.add(users.get(userId));
+                    log.debug("Добавили в список пользователя с id: " + userId + " для http-ответа");
+                    userList.add(users.get(friendId));
+                    log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
+                    return userList;
+                } else {
+                    List<User> userList = new ArrayList<>();
+                    log.debug("Создали новый список userList для http-ответа");
+                    userList.add(users.get(userId));
+                    log.debug("Добавили в список пользователя с id: " + userId + " для http-ответа");
+                    userList.add(users.get(friendId));
+                    log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
+                    return userList;
+                }
             } else {
                 log.error("Один из пользователей не найден, проверьте корректность ввода обоих id");
                 throw new NotFoundException("Один из пользователей не найден, проверьте корректность ввода обоих id");
