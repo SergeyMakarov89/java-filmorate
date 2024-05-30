@@ -106,16 +106,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Collection<Film> getPopularFilms(Long count) {
         if (count != null) {
-            if (count < films.size()) {
-                return films.values()
-                        .stream()
-                        .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
-                        .limit(count)
-                        .collect(Collectors.toList());
-            } else {
-                log.error("Значение параметра count слишком большое, оно должно быть меньше или равно " + films.size());
-                throw new ValidationException("Значение параметра count слишком большое, оно должно быть меньше или равно " + films.size());
-            }
+            return films.values()
+                    .stream()
+                    .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
+                    .limit(count)
+                    .collect(Collectors.toList());
         } else {
             log.error("Не правильный ввод параметра count");
             throw new ValidationException("Не правильный ввод параметра count");
