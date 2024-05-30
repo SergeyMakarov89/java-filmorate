@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,19 +61,24 @@ public class InMemoryFilmStorage implements FilmStorage {
         return ++currentNewId;
     }
 
-    public Film addLikeToFilm(Long filmId, Long userId) {
+    public Film addLikeToFilm(Long filmId,  Long userId) {
         if (filmId != null && userId != null) {
             if (films.containsKey(filmId)) {
-                if (films.get(filmId).getLikes() == null) {
-                    films.get(filmId).setLikes(new HashSet<>());
-                    log.debug("Создали новый HashSet и присвоили его значению поля likes");
-                    films.get(filmId).getLikes().add(userId);
-                    log.debug("Добавили лайк пользователя фильму");
+                if (InMemoryUserStorage.users.containsKey(userId)) {
+                    if (films.get(filmId).getLikes() == null) {
+                        films.get(filmId).setLikes(new HashSet<>());
+                        log.debug("Создали новый HashSet и присвоили его значению поля likes");
+                        films.get(filmId).getLikes().add(userId);
+                        log.debug("Добавили лайк пользователя фильму");
+                    } else {
+                        films.get(filmId).getLikes().add(userId);
+                        log.debug("Добавили лайк пользователя фильму");
+                    }
+                    return films.get(filmId);
                 } else {
-                    films.get(filmId).getLikes().add(userId);
-                    log.debug("Добавили лайк пользователя фильму");
+                    log.error("Пользователь с id = " + userId + " не найден в коллекции");
+                    throw new NotFoundException("Пользователь не найден, проверьте корректность ввода id");
                 }
-                return films.get(filmId);
             } else {
                 log.error("Фильм с id = " + filmId + " не найден в коллекции");
                 throw new NotFoundException("Фильм не найден, проверьте корректность ввода id");
@@ -106,9 +112,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Collection<Film> getPopularFilms(Long count) {
         if (count != null) {
-            return films.values()
+            return  films.values()
                     .stream()
-                    .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
+                    .sorted(Comparator.comparingInt((Film film) -> Optional.ofNullable(film.getLikes()).map(Set::size).orElse(0)).reversed())
                     .limit(count)
                     .collect(Collectors.toList());
         } else {
