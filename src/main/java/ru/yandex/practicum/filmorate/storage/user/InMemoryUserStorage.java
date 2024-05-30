@@ -125,8 +125,13 @@ public class InMemoryUserStorage implements UserStorage {
                     log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
                     return userList;
                 } else {
-                    log.error("Пользователи друзьями не являются");
-                    throw new NotFoundException("Пользователи друзьями не являются");
+                    List<User> userList = new ArrayList<>();
+                    log.debug("Создали новый список userList для http-ответа");
+                    userList.add(users.get(userId));
+                    log.debug("Добавили в список пользователя с id: " + userId + " для http-ответа");
+                    userList.add(users.get(friendId));
+                    log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
+                    return userList;
                 }
             } else {
                 log.error("Один из пользователей не найден, проверьте корректность ввода обоих id");
