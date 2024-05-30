@@ -2,8 +2,10 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -106,11 +108,16 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Collection<Film> getPopularFilms(Long count) {
         if (count != null) {
-            return films.values()
-                    .stream()
-                    .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
-                    .limit(count)
-                    .collect(Collectors.toList());
+            if (count < films.size()) {
+                return films.values()
+                        .stream()
+                        .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
+                        .limit(count)
+                        .collect(Collectors.toList());
+            } else {
+                log.error("Значение параметра count слишком большое, оно должно быть меньше или равно " + films.size());
+                throw new ValidationException("Значение параметра count слишком большое, оно должно быть меньше или равно " + films.size());
+            }
         } else {
             log.error("Не правильный ввод параметра count");
             throw new ValidationException("Не правильный ввод параметра count");
