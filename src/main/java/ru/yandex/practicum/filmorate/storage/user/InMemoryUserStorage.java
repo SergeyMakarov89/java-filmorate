@@ -112,7 +112,7 @@ public class InMemoryUserStorage implements UserStorage {
     public Collection<User> deleteFriend(Long userId, Long friendId) {
         if (userId != null && friendId != null) {
             if (users.containsKey(userId) && users.containsKey(friendId)) {
-                if (users.get(userId).getFriends().contains(friendId)) {
+                if (users.get(userId).getFriends() != null && users.get(friendId).getFriends() != null) {
                     users.get(userId).getFriends().remove(friendId);
                     log.debug("Удалили у пользователя с id:" + userId + " друга с id:" + friendId);
                     users.get(friendId).getFriends().remove(userId);
@@ -125,13 +125,8 @@ public class InMemoryUserStorage implements UserStorage {
                     log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
                     return userList;
                 } else {
-                    List<User> userList = new ArrayList<>();
-                    log.debug("Создали новый список userList для http-ответа");
-                    userList.add(users.get(userId));
-                    log.debug("Добавили в список пользователя с id: " + userId + " для http-ответа");
-                    userList.add(users.get(friendId));
-                    log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
-                    return userList;
+                    log.error("Пользователи друзьями не являются");
+                    throw new NotFoundException("Пользователи друзьями не являются");
                 }
             } else {
                 log.error("Один из пользователей не найден, проверьте корректность ввода обоих id");
