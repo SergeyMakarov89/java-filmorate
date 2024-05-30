@@ -145,8 +145,7 @@ public class InMemoryUserStorage implements UserStorage {
                     }
                     return userList;
                 } else {
-                    log.error("Список друзей пользователя c id:" + userId + " пуст");
-                    throw new NotFoundException("Список друзей пользователя пуст");
+                    return new ArrayList<>();
                 }
             } else {
                 log.error("Пользователь с id = " + userId + " не найден в коллекции");
