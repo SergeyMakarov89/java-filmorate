@@ -17,10 +17,12 @@ public class InMemoryUserStorage implements UserStorage {
     public static Map<Long, User> users = new HashMap<>();
     private long currentNewId = 0;
 
+    @Override
     public Collection<User> findAll() {
         return users.values();
     }
 
+    @Override
     public User findUserById(Long userId) {
         return users.values().stream()
                 .filter(u -> u.getId().equals(userId))
@@ -28,9 +30,10 @@ public class InMemoryUserStorage implements UserStorage {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id: %d не найден", userId)));
     }
 
+    @Override
     public User create(@Valid @RequestBody(required = true) User user) {
         if (user.getName() == null) {
-            log.debug("Имя пустое при создании пользователя");
+            log.info("Имя пустое при создании пользователя");
             user.setName(user.getLogin());
             log.info("Присвоели имени нового пользователя значение логина при создании пользователя");
         }
@@ -41,17 +44,18 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
+    @Override
     public User update(@Valid @RequestBody(required = true) User newUser) {
 
         if (users.containsKey(newUser.getId())) {
             User updatedUser = users.get(newUser.getId());
-            log.debug("Создали updatedUser и присвоели ему значение соотвествоющие такому же Id нового пользователя");
+            log.info("Создали updatedUser и присвоели ему значение соотвествоющие такому же Id нового пользователя");
             updatedUser.setEmail(newUser.getEmail());
             log.info("Присвоели электронную почту updatedUser из newUser");
             updatedUser.setLogin(newUser.getLogin());
             log.info("Присвоели логин updatedUser из newUser");
             if (newUser.getName() == null) {
-                log.debug("Имя пустое при обновлении пользователя");
+                log.info("Имя пустое при обновлении пользователя");
                 newUser.setName(newUser.getLogin());
                 log.info("Присвоели имени нового пользователя значение логина при обновлении пользователя");
             } else {
@@ -66,38 +70,34 @@ public class InMemoryUserStorage implements UserStorage {
         throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
     }
 
-    public long getNextId() {
-        log.info("Определили currentNewId в текущий момент");
-        return ++currentNewId;
-    }
-
+    @Override
     public Collection<User> addFriendToUser(Long userId, Long friendId) {
         if (userId != null && friendId != null) {
             if (users.containsKey(userId) && users.containsKey(friendId)) {
                 if (users.get(userId).getFriends() == null) {
                     users.get(userId).setFriends(new HashSet<>());
-                    log.debug("Создали новый HashSet и присвоили его значению поля friends");
+                    log.info("Создали новый HashSet и присвоили его значению поля friends");
                     users.get(userId).getFriends().add(friendId);
-                    log.debug("Добавили друга с id:" + friendId + " пользователю c id:" + userId);
+                    log.info("Добавили друга с id:" + friendId + " пользователю c id:" + userId);
                 } else {
                     users.get(userId).getFriends().add(friendId);
-                    log.debug("Добавили друга с id:" + friendId + " пользователю c id:" + userId);
+                    log.info("Добавили друга с id:" + friendId + " пользователю c id:" + userId);
                 }
                 if (users.get(friendId).getFriends() == null) {
                     users.get(friendId).setFriends(new HashSet<>());
-                    log.debug("Создали новый HashSet и присвоили его значению поля friends");
+                    log.info("Создали новый HashSet и присвоили его значению поля friends");
                     users.get(friendId).getFriends().add(userId);
-                    log.debug("Добавили другу с id:" + friendId + " пользователя c id:" + userId + " в друзья тоже");
+                    log.info("Добавили другу с id:" + friendId + " пользователя c id:" + userId + " в друзья тоже");
                 } else {
                     users.get(friendId).getFriends().add(userId);
-                    log.debug("Добавили другу с id:" + friendId + " пользователя c id:" + userId + " в друзья тоже");
+                    log.info("Добавили другу с id:" + friendId + " пользователя c id:" + userId + " в друзья тоже");
                 }
                 List<User> userList = new ArrayList<>();
-                log.debug("Создали новый список userList для пользователей для http-ответа");
+                log.info("Создали новый список userList для пользователей для http-ответа");
                 userList.add(users.get(userId));
-                log.debug("Добавили в список пользователя с id: " + userId + " для http-ответа");
+                log.info("Добавили в список пользователя с id: " + userId + " для http-ответа");
                 userList.add(users.get(friendId));
-                log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
+                log.info("Добавили в список друга с id: " + friendId + " для http-ответа");
                 return userList;
             } else {
                 log.error("Один из пользователей не найден, проверьте корректность ввода обоих id");
@@ -109,28 +109,29 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
+    @Override
     public Collection<User> deleteFriend(Long userId, Long friendId) {
         if (userId != null && friendId != null) {
             if (users.containsKey(userId) && users.containsKey(friendId)) {
                 if (users.get(userId).getFriends() != null && users.get(friendId).getFriends() != null) {
                     users.get(userId).getFriends().remove(friendId);
-                    log.debug("Удалили у пользователя с id:" + userId + " друга с id:" + friendId);
+                    log.info("Удалили у пользователя с id:" + userId + " друга с id:" + friendId);
                     users.get(friendId).getFriends().remove(userId);
-                    log.debug("Удалили у друга с id:" + friendId + " пользователя с id:" + userId);
+                    log.info("Удалили у друга с id:" + friendId + " пользователя с id:" + userId);
                     List<User> userList = new ArrayList<>();
-                    log.debug("Создали новый список userList для http-ответа");
+                    log.info("Создали новый список userList для http-ответа");
                     userList.add(users.get(userId));
-                    log.debug("Добавили в список пользователя с id: " + userId + " для http-ответа");
+                    log.info("Добавили в список пользователя с id: " + userId + " для http-ответа");
                     userList.add(users.get(friendId));
-                    log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
+                    log.info("Добавили в список друга с id: " + friendId + " для http-ответа");
                     return userList;
                 } else {
                     List<User> userList = new ArrayList<>();
-                    log.debug("Создали новый список userList для http-ответа");
+                    log.info("Создали новый список userList для http-ответа");
                     userList.add(users.get(userId));
-                    log.debug("Добавили в список пользователя с id: " + userId + " для http-ответа");
+                    log.info("Добавили в список пользователя с id: " + userId + " для http-ответа");
                     userList.add(users.get(friendId));
-                    log.debug("Добавили в список друга с id: " + friendId + " для http-ответа");
+                    log.info("Добавили в список друга с id: " + friendId + " для http-ответа");
                     return userList;
                 }
             } else {
@@ -143,12 +144,13 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
+    @Override
     public Collection<User> getFriends(Long userId) {
         if (userId != null) {
             if (users.containsKey(userId)) {
                 if (users.get(userId).getFriends() != null) {
                     List<User> userList = new ArrayList<>();
-                    log.debug("Создали новый список userList для http-ответа");
+                    log.info("Создали новый список userList для http-ответа");
                     for (Long friendId : users.get(userId).getFriends()) {
                         userList.add(users.get(friendId));
                         log.trace("Добавили в список userList друга пользоваля с id:" + userId);
@@ -167,12 +169,13 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
+    @Override
     public Collection<User> getCommonFriends(Long userId, Long friendId) {
         if (userId != null && friendId != null) {
             if (users.containsKey(userId) && users.containsKey(friendId)) {
                 if (users.get(userId).getFriends() != null && users.get(friendId).getFriends() != null) {
                     List<User> userList = new ArrayList<>();
-                    log.debug("Создали новый список userList для http-ответа");
+                    log.info("Создали новый список userList для http-ответа");
                     for (Long userFriendId : users.get(userId).getFriends()) {
                         if (users.get(friendId).getFriends().contains(userFriendId)) {
                             userList.add(users.get(userFriendId));
@@ -192,5 +195,10 @@ public class InMemoryUserStorage implements UserStorage {
             log.error("id некорректны");
             throw new ValidationException("id некорректны");
         }
+    }
+
+    private long getNextId() {
+        log.info("Определили currentNewId в текущий момент");
+        return ++currentNewId;
     }
 }

@@ -19,10 +19,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
     private long currentNewId = 0;
 
+    @Override
     public Collection<Film> findAll() {
         return films.values();
     }
 
+    @Override
     public Film findFilmById(Long filmId) {
         return films.values().stream()
                 .filter(f -> f.getId().equals(filmId))
@@ -30,6 +32,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .orElseThrow(() -> new NotFoundException(String.format("Фильм с id: %d не найден", filmId)));
     }
 
+    @Override
     public Film create(@Valid @RequestBody(required = true) Film film) {
         film.setId(getNextId());
         log.info("Присвоели Id новому фильму");
@@ -38,6 +41,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
+    @Override
     public Film update(@Valid @RequestBody(required = true) Film newFilm) {
         if (films.containsKey(newFilm.getId())) {
             Film updatedFilm = films.get(newFilm.getId());
@@ -56,23 +60,19 @@ public class InMemoryFilmStorage implements FilmStorage {
         throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");
     }
 
-    public long getNextId() {
-        log.info("Определили currentNewId в текущий момент");
-        return ++currentNewId;
-    }
-
+    @Override
     public Film addLikeToFilm(Long filmId,  Long userId) {
         if (filmId != null && userId != null) {
             if (films.containsKey(filmId)) {
                 if (InMemoryUserStorage.users.containsKey(userId)) {
                     if (films.get(filmId).getLikes() == null) {
                         films.get(filmId).setLikes(new HashSet<>());
-                        log.debug("Создали новый HashSet и присвоили его значению поля likes");
+                        log.info("Создали новый HashSet и присвоили его значению поля likes");
                         films.get(filmId).getLikes().add(userId);
-                        log.debug("Добавили лайк пользователя фильму");
+                        log.info("Добавили лайк пользователя фильму");
                     } else {
                         films.get(filmId).getLikes().add(userId);
-                        log.debug("Добавили лайк пользователя фильму");
+                        log.info("Добавили лайк пользователя фильму");
                     }
                     return films.get(filmId);
                 } else {
@@ -89,12 +89,13 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
+    @Override
     public Film deleteLikeFromFilm(Long filmId, Long userId) {
         if (filmId != null && userId != null) {
             if (films.containsKey(filmId)) {
                 if (films.get(filmId).getLikes().contains(userId)) {
                     films.get(filmId).getLikes().remove(userId);
-                    log.debug("Удалили лайк пользователя у фильма");
+                    log.info("Удалили лайк пользователя у фильма");
                     return films.get(filmId);
                 } else {
                     log.error("У фильма с id:" + filmId + " нет лайка от пользователя с id:" + userId + ", проверьте корректность ввода id");
@@ -110,6 +111,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
+    @Override
     public Collection<Film> getPopularFilms(Long count) {
         if (count != null) {
             return  films.values()
@@ -121,5 +123,10 @@ public class InMemoryFilmStorage implements FilmStorage {
             log.error("Не правильный ввод параметра count");
             throw new ValidationException("Не правильный ввод параметра count");
         }
+    }
+
+    private long getNextId() {
+        log.info("Определили currentNewId в текущий момент");
+        return ++currentNewId;
     }
 }

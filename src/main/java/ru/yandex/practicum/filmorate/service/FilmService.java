@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
@@ -26,11 +24,11 @@ public class FilmService {
         return inMemoryFilmStorage.findFilmById(filmId);
     }
 
-    public Film create(@Valid @RequestBody(required = true) Film film) {
+    public Film create(Film film) {
         return inMemoryFilmStorage.create(film);
     }
 
-    public Film update(@Valid @RequestBody(required = true) Film newFilm) {
+    public Film update(Film newFilm) {
         return inMemoryFilmStorage.update(newFilm);
     }
 

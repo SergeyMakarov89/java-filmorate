@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
@@ -26,11 +24,11 @@ public class UserService {
         return inMemoryUserStorage.findUserById(userId);
     }
 
-    public User create(@Valid @RequestBody(required = true) User user) {
+    public User create(User user) {
         return inMemoryUserStorage.create(user);
     }
 
-    public User update(@Valid @RequestBody(required = true) User newUser) {
+    public User update(User newUser) {
         return inMemoryUserStorage.update(newUser);
     }
 

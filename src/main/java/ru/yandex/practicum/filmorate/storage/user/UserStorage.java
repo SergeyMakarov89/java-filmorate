@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -12,11 +10,9 @@ public interface UserStorage {
 
     public User findUserById(Long userId);
 
-    public User create(@Valid @RequestBody(required = true) User user);
+    public User create(User user);
 
-    public User update(@Valid @RequestBody(required = true) User newUser);
-
-    public long getNextId();
+    public User update(User newUser);
 
     public Collection<User> addFriendToUser(Long userId, Long friendId);
 
