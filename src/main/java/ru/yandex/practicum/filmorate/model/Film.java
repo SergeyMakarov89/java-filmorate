@@ -1,16 +1,19 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.annotation.FilmDescriptionConstraint;
 import ru.yandex.practicum.filmorate.annotation.FilmDurationConstraint;
 import ru.yandex.practicum.filmorate.annotation.FilmNameConstraint;
 import ru.yandex.practicum.filmorate.annotation.FilmReleaseDateConstraint;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
+@EqualsAndHashCode(of = {"id"})
 public class Film {
-    private long id;
+    private Long id;
     @FilmNameConstraint
     private String name;
     @FilmDescriptionConstraint
@@ -19,4 +22,5 @@ public class Film {
     private LocalDate releaseDate;
     @FilmDurationConstraint
     private Long duration;
+    private Set<Long> likes;
 }
