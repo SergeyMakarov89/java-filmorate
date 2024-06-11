@@ -107,7 +107,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             }
         } else {
             log.error("id некорректны");
-            throw new ValidationException("id некорректны");
+            throw new ValidationException("id некорректны, проверьте id");
         }
     }
 
