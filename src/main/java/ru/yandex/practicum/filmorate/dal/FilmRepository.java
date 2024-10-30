@@ -17,20 +17,28 @@ public class FilmRepository extends BaseRepository<Film> {
             "VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE films SET FILM_NAME = ?, FILM_DESCRIPTION = ?, FILM_RELEASE_DATE = ?, FILM_DURATION = ?, FILM_RATING_MPA = ? WHERE FILM_ID = ?";
     private static final String FIND_POPULAR_FILMS_QUERY = "SELECT F.* FROM FILMS F JOIN (SELECT FILM_ID FROM LIKES GROUP BY FILM_ID ORDER BY COUNT(USER_ID) DESC LIMIT ?) L ON F.FILM_ID = L.FILM_ID";
+
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
     }
+
     public List<Film> findAll() {
         List<Film> films = findMany(FIND_ALL_QUERY);
         return films;
     }
+
     public Optional<Film> findByName(String name) {
         return findOne(FIND_BY_NAME_QUERY, name);
     }
+
     public Optional<Film> findById(long filmId) {
         return findOne(FIND_BY_ID_QUERY, filmId);
     }
-    public List<Film> getPopularFilms(Integer count) { return findMany(FIND_POPULAR_FILMS_QUERY, count);}
+
+    public List<Film> getPopularFilms(Integer count) {
+        return findMany(FIND_POPULAR_FILMS_QUERY, count);
+    }
+
     public Film save(Film film) {
         long id = insert(
                 INSERT_QUERY,

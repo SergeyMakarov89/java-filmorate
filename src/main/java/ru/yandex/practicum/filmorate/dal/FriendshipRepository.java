@@ -20,6 +20,7 @@ public class FriendshipRepository extends BaseRepository<Friendship> {
     private static final String UPDATE_QUERY = "UPDATE friendship SET USER_ID = ?, FRIEND_ID = ?, IS_CONFIRMED_FRIEND = ? WHERE FRIENDSHIP_ID = ?";
     private static final String FIND_FRIENDSHIP = "SELECT * FROM friendship WHERE USER_ID = ? AND FRIEND_ID = ?";
     private static final String DELETE_FRIENDSHIP_BY_USER_ID_FRIEND_ID_QUERY = "DELETE FROM friendship WHERE USER_ID = ? AND FRIEND_ID = ?";
+
     public FriendshipRepository(JdbcTemplate jdbc, RowMapper<Friendship> mapper) {
         super(jdbc, mapper);
     }
@@ -32,9 +33,13 @@ public class FriendshipRepository extends BaseRepository<Friendship> {
         return findOne(FIND_BY_ID_QUERY, friendshipId);
     }
 
-    public Optional<Friendship> findByUserId(long id) {return findOne(FIND_BY_USER_ID_QUERY, id); }
+    public Optional<Friendship> findByUserId(long id) {
+        return findOne(FIND_BY_USER_ID_QUERY, id);
+    }
 
-    public List<Friendship> findByManyUserId(long id) {return findMany(FIND_BY_USER_ID_QUERY, id); }
+    public List<Friendship> findByManyUserId(long id) {
+        return findMany(FIND_BY_USER_ID_QUERY, id);
+    }
 
     public List<Friendship> findByFriendshipStatus(String status) {
         return findMany(FIND_BY_FRIENDSHIP_STATUS_QUERY, status);

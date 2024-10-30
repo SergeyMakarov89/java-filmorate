@@ -24,16 +24,22 @@ public class LikeRepository extends BaseRepository<Like> {
         super(jdbc, mapper);
     }
 
-    public List<Like> findAll() { return findMany(FIND_ALL_QUERY);}
+    public List<Like> findAll() {
+        return findMany(FIND_ALL_QUERY);
+    }
+
     public Optional<Like> findByFilmId(Long filmId) {
         return findOne(FIND_BY_FILM_ID_QUERY, filmId);
     }
+
     public Long findLikesByFilmId(Long filmId) {
         return findResult(FIND_BY_LIKES_BY_FILM_ID_QUERY, filmId);
     }
+
     public Optional<Like> findByUserId(Long userId) {
         return findOne(FIND_BY_USER_ID_QUERY, userId);
     }
+
     public Optional<Like> findById(Long id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }

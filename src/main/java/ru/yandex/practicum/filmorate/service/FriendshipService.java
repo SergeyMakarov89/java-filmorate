@@ -69,7 +69,7 @@ public class FriendshipService {
                 .orElseThrow(() -> new NotFoundException("Дружба не найдена с ID: " + friendshipId));
     }
 
-    public boolean addFriend(Long userId,  Long friendId) {
+    public boolean addFriend(Long userId, Long friendId) {
         if (userId == null) {
             throw new NotFoundException("ID пользователя должно быть указано");
         }
