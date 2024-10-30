@@ -18,9 +18,9 @@ import java.util.*;
 public class FilmMapper {
 
 
-    private final static HashMap<Long, Rating> allRatings = new HashMap<>();
-    private final static HashMap<Long, Genre> allGenres = new HashMap<>();
-    private final static HashMap<Long, FilmGenre> allFilmGenres = new HashMap<>();
+    private static final HashMap<Long, Rating> allRatings = new HashMap<>();
+    private static final HashMap<Long, Genre> allGenres = new HashMap<>();
+    private static final HashMap<Long, FilmGenre> allFilmGenres = new HashMap<>();
 
     public FilmMapper(RatingRepository ratingRepository, GenreRepository genreRepository, FilmGenreRepository filmGenreRepository) {
         for (Rating rating : ratingRepository.findAll()) {
