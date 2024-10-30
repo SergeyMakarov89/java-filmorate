@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.annotation.FilmDescriptionConstraint;
 import ru.yandex.practicum.filmorate.annotation.FilmDurationConstraint;
-import ru.yandex.practicum.filmorate.annotation.FilmNameConstraint;
 import ru.yandex.practicum.filmorate.annotation.FilmReleaseDateConstraint;
 
 import java.time.LocalDate;
@@ -14,7 +13,6 @@ import java.util.Set;
 @EqualsAndHashCode(of = {"id"})
 public class Film {
     private Long id;
-    @FilmNameConstraint
     private String name;
     @FilmDescriptionConstraint
     private String description;
@@ -22,5 +20,6 @@ public class Film {
     private LocalDate releaseDate;
     @FilmDurationConstraint
     private Long duration;
-    private Set<Long> likes;
+    private Set<Long> genres;
+    private Long mpa;
 }

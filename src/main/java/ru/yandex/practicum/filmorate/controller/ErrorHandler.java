@@ -45,4 +45,13 @@ public class ErrorHandler {
             return description;
         }
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleExceptionNew(final Exception e) {
+        return new ErrorResponse(
+                "error",
+                e.getMessage()
+        );
+    }
 }
