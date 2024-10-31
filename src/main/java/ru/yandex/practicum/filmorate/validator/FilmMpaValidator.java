@@ -12,6 +12,7 @@ public class FilmMpaValidator implements ConstraintValidator<FilmMpaConstraint, 
 
     @Autowired
     public RatingRepository ratingRepository;
+
     @Override
     public void initialize(FilmMpaConstraint filmMpa) {
     }
