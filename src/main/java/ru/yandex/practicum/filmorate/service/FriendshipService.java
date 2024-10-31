@@ -3,14 +3,10 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.stereotype.Service;
 
 import ru.yandex.practicum.filmorate.dal.FriendshipRepository;
-import ru.yandex.practicum.filmorate.dto.FriendshipDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.FriendshipMapper;
 import ru.yandex.practicum.filmorate.model.Friendship;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class FriendshipService {
