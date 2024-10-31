@@ -10,16 +10,12 @@ import ru.yandex.practicum.filmorate.dto.RatingDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.util.*;
 
 @Component
 public class FilmMapper {
 
-    private static final HashMap<Long, Rating> allRatings = new HashMap<>();
-    private static final HashMap<Long, Genre> allGenres = new HashMap<>();
-    private static final HashMap<Long, FilmGenre> allFilmGenres = new HashMap<>();
     private final RatingRepository ratingRepository;
     private final GenreRepository genreRepository;
     private final FilmGenreRepository filmGenreRepository;
@@ -33,7 +29,6 @@ public class FilmMapper {
         this.filmGenreRepository = filmGenreRepository;
         this.genreMapper = genreMapper;
         this.ratingMapper = ratingMapper;
-        start();
     }
 
     public Film mapToFilm(FilmDto request) {
@@ -57,7 +52,7 @@ public class FilmMapper {
     public FilmDto mapToFilmDto(Film film) {
 
 
-        RatingDto ratingDto = ratingMapper.mapToRatingDto(allRatings.get(film.getMpa()));
+        RatingDto ratingDto = ratingMapper.mapToRatingDto(ratingRepository.findById(film.getMpa()).get());
 
         FilmDto dto = new FilmDto();
         dto.setId(film.getId());
@@ -70,7 +65,7 @@ public class FilmMapper {
         if (film.getGenres() != null) {
             List<GenreDto> genresDto = new ArrayList<>();
             for (Long genreId : film.getGenres()) {
-                for (Genre genre : allGenres.values()) {
+                for (Genre genre : genreRepository.findAll()) {
                     if (genreId.equals(genre.getId())) {
                         GenreDto genreDto = genreMapper.mapToGenreDto(genre);
                         genresDto.add(genreDto);
@@ -106,7 +101,7 @@ public class FilmMapper {
             }
             film.setGenres(genres);
         } else {
-            for (FilmGenre filmGenre : allFilmGenres.values()) {
+            for (FilmGenre filmGenre : filmGenreRepository.findAll()) {
                 if (request.getId().equals(filmGenre.getFilmId())) {
                     genres.add(filmGenre.getGenreId());
                 }
@@ -117,17 +112,5 @@ public class FilmMapper {
             film.setMpa(request.getMpa().getId());
         }
         return film;
-    }
-
-    public void start() {
-        for (Rating rating : ratingRepository.findAll()) {
-            allRatings.put(rating.getId(), rating);
-        }
-        for (Genre genre : genreRepository.findAll()) {
-            allGenres.put(genre.getId(), genre);
-        }
-        for (FilmGenre filmGenre : filmGenreRepository.findAll()) {
-            allFilmGenres.put(filmGenre.getId(), filmGenre);
-        }
     }
 }
