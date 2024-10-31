@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.model.FilmGenre;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FilmGenreMapper {
 
-    public static FilmGenre mapToFilmGenre(FilmGenreDto request) {
+    public FilmGenre mapToFilmGenre(FilmGenreDto request) {
         FilmGenre filmGenre = new FilmGenre();
         filmGenre.setFilmId(request.getFilmId());
         filmGenre.setGenreId(request.getGenreId());
@@ -18,7 +18,7 @@ public class FilmGenreMapper {
         return filmGenre;
     }
 
-    public static FilmGenreDto mapToFilmGenreDto(FilmGenre filmGenre) {
+    public FilmGenreDto mapToFilmGenreDto(FilmGenre filmGenre) {
         FilmGenreDto dto = new FilmGenreDto();
         dto.setId(filmGenre.getId());
         dto.setFilmId(filmGenre.getFilmId());
@@ -27,7 +27,7 @@ public class FilmGenreMapper {
         return dto;
     }
 
-    public static FilmGenre updateFilmGenreFields(FilmGenre filmGenre, FilmGenreDto request) {
+    public FilmGenre updateFilmGenreFields(FilmGenre filmGenre, FilmGenreDto request) {
         if (request.getFilmId() != null) {
             filmGenre.setFilmId(request.getFilmId());
         }

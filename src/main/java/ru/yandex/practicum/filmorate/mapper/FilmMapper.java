@@ -20,20 +20,23 @@ public class FilmMapper {
     private static final HashMap<Long, Rating> allRatings = new HashMap<>();
     private static final HashMap<Long, Genre> allGenres = new HashMap<>();
     private static final HashMap<Long, FilmGenre> allFilmGenres = new HashMap<>();
+    private final RatingRepository ratingRepository;
+    private final GenreRepository genreRepository;
+    private final FilmGenreRepository filmGenreRepository;
+    private final GenreMapper genreMapper;
+    private final RatingMapper ratingMapper;
 
-    public FilmMapper(RatingRepository ratingRepository, GenreRepository genreRepository, FilmGenreRepository filmGenreRepository) {
-        for (Rating rating : ratingRepository.findAll()) {
-            allRatings.put(rating.getId(), rating);
-        }
-        for (Genre genre : genreRepository.findAll()) {
-            allGenres.put(genre.getId(), genre);
-        }
-        for (FilmGenre filmGenre : filmGenreRepository.findAll()) {
-            allFilmGenres.put(filmGenre.getId(), filmGenre);
-        }
+    public FilmMapper(RatingRepository ratingRepository, GenreRepository genreRepository, FilmGenreRepository filmGenreRepository, GenreMapper genreMapper, RatingMapper ratingMapper) {
+
+        this.ratingRepository = ratingRepository;
+        this.genreRepository = genreRepository;
+        this.filmGenreRepository = filmGenreRepository;
+        this.genreMapper = genreMapper;
+        this.ratingMapper = ratingMapper;
+        start();
     }
 
-    public static Film mapToFilm(FilmDto request) {
+    public Film mapToFilm(FilmDto request) {
 
         Film film = new Film();
         film.setName(request.getName());
@@ -51,10 +54,10 @@ public class FilmMapper {
         return film;
     }
 
-    public static FilmDto mapToFilmDto(Film film) {
+    public FilmDto mapToFilmDto(Film film) {
 
 
-        RatingDto ratingDto = RatingMapper.mapToRatingDto(allRatings.get(film.getMpa()));
+        RatingDto ratingDto = ratingMapper.mapToRatingDto(allRatings.get(film.getMpa()));
 
         FilmDto dto = new FilmDto();
         dto.setId(film.getId());
@@ -69,7 +72,7 @@ public class FilmMapper {
             for (Long genreId : film.getGenres()) {
                 for (Genre genre : allGenres.values()) {
                     if (genreId.equals(genre.getId())) {
-                        GenreDto genreDto = GenreMapper.mapToGenreDto(genre);
+                        GenreDto genreDto = genreMapper.mapToGenreDto(genre);
                         genresDto.add(genreDto);
                     }
                 }
@@ -80,7 +83,7 @@ public class FilmMapper {
         return dto;
     }
 
-    public static Film updateFilmFields(Film film, FilmDto request) {
+    public Film updateFilmFields(Film film, FilmDto request) {
 
         Set<Long> genres = new TreeSet<>();
 
@@ -98,7 +101,7 @@ public class FilmMapper {
         }
         if (request.getGenres() != null) {
             for (GenreDto genreDto : request.getGenres()) {
-                Genre genre = GenreMapper.mapToGenre(genreDto);
+                Genre genre = genreMapper.mapToGenre(genreDto);
                 genres.add(genre.getId());
             }
             film.setGenres(genres);
@@ -114,5 +117,17 @@ public class FilmMapper {
             film.setMpa(request.getMpa().getId());
         }
         return film;
+    }
+
+    public void start() {
+        for (Rating rating : ratingRepository.findAll()) {
+            allRatings.put(rating.getId(), rating);
+        }
+        for (Genre genre : genreRepository.findAll()) {
+            allGenres.put(genre.getId(), genre);
+        }
+        for (FilmGenre filmGenre : filmGenreRepository.findAll()) {
+            allFilmGenres.put(filmGenre.getId(), filmGenre);
+        }
     }
 }

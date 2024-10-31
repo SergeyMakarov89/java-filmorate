@@ -15,9 +15,11 @@ import java.util.stream.Collectors;
 @Service
 public class RatingService {
     private final RatingRepository ratingRepository;
+    private final RatingMapper ratingMapper;
 
-    public RatingService(RatingRepository ratingRepository) {
+    public RatingService(RatingRepository ratingRepository, RatingMapper ratingMapper) {
         this.ratingRepository = ratingRepository;
+        this.ratingMapper = ratingMapper;
     }
 
     public RatingDto createRating(RatingDto request) {
@@ -29,29 +31,29 @@ public class RatingService {
         if (alreadyExistRating.isPresent()) {
             throw new NotFoundException("Данное название уже используется");
         }
-        Rating rating = RatingMapper.mapToRating(request);
+        Rating rating = ratingMapper.mapToRating(request);
         rating = ratingRepository.save(rating);
-        return RatingMapper.mapToRatingDto(rating);
+        return ratingMapper.mapToRatingDto(rating);
     }
 
     public RatingDto getRatingById(long ratingId) {
         return ratingRepository.findById(ratingId)
-                .map(RatingMapper::mapToRatingDto)
+                .map(ratingMapper::mapToRatingDto)
                 .orElseThrow(() -> new NotFoundException("Рейгинг не найден с ID: " + ratingId));
     }
 
     public List<RatingDto> getRatings() {
         return ratingRepository.findAll()
                 .stream()
-                .map(RatingMapper::mapToRatingDto)
+                .map(ratingMapper::mapToRatingDto)
                 .collect(Collectors.toList());
     }
 
     public RatingDto updateRating(long ratingId, RatingDto request) {
         Rating updatedRating = ratingRepository.findById(ratingId)
-                .map(rating -> RatingMapper.updateRatingFields(rating, request))
+                .map(rating -> ratingMapper.updateRatingFields(rating, request))
                 .orElseThrow(() -> new NotFoundException("Рейтинг не найден"));
         updatedRating = ratingRepository.update(updatedRating);
-        return RatingMapper.mapToRatingDto(updatedRating);
+        return ratingMapper.mapToRatingDto(updatedRating);
     }
 }

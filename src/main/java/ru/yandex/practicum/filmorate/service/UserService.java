@@ -19,10 +19,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FriendshipRepository friendshipRepository;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, FriendshipRepository friendshipRepository) {
+    public UserService(UserRepository userRepository, FriendshipRepository friendshipRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.friendshipRepository = friendshipRepository;
+        this.userMapper = userMapper;
     }
 
     public UserDto createUser(UserDto request) {
@@ -37,30 +39,30 @@ public class UserService {
         if (alreadyExistUser.isPresent()) {
             throw new NotFoundException("Данный имейл уже используется");
         }
-        User user = UserMapper.mapToUser(request);
+        User user = userMapper.mapToUser(request);
         user = userRepository.save(user);
-        return UserMapper.mapToUserDto(user);
+        return userMapper.mapToUserDto(user);
     }
 
     public UserDto getUserById(long userId) {
         return userRepository.findById(userId)
-                .map(UserMapper::mapToUserDto)
+                .map(userMapper::mapToUserDto)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + userId));
     }
 
     public List<UserDto> getUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(UserMapper::mapToUserDto)
+                .map(userMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
     public UserDto updateUser(long userId, UserDto request) {
         User updatedUser = userRepository.findById(userId)
-                .map(user -> UserMapper.updateUserFields(user, request))
+                .map(user -> userMapper.updateUserFields(user, request))
                 .orElseThrow(() -> new ValidationException("Пользователь не найден"));
         updatedUser = userRepository.update(updatedUser);
-        return UserMapper.mapToUserDto(updatedUser);
+        return userMapper.mapToUserDto(updatedUser);
     }
 
     public UserDto updateUserFull(UserDto userRequest) {
@@ -68,10 +70,10 @@ public class UserService {
             throw new NotFoundException("Пользователь не найден");
         }
         User updatedUser = userRepository.findById(userRequest.getId())
-                .map(user -> UserMapper.updateUserFields(user, userRequest))
+                .map(user -> userMapper.updateUserFields(user, userRequest))
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         updatedUser = userRepository.update(updatedUser);
-        return UserMapper.mapToUserDto(updatedUser);
+        return userMapper.mapToUserDto(updatedUser);
     }
 
     public List<User> getFriendsByUserId(long userId) {
@@ -81,7 +83,7 @@ public class UserService {
     public List<UserDto> getCommonFriends(long userId, long friendId) {
         return userRepository.findCommonFriends(userId, friendId)
                 .stream()
-                .map(UserMapper::mapToUserDto)
+                .map(userMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 }

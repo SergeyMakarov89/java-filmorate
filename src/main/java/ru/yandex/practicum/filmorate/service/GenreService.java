@@ -15,8 +15,11 @@ import java.util.stream.Collectors;
 @Service
 public class GenreService {
     private final GenreRepository genreRepository;
+    private final GenreMapper genreMapper;
 
-    public GenreService(GenreRepository genreRepository) {
+    public GenreService(GenreMapper genreMapper, GenreRepository genreRepository) {
+
+        this.genreMapper = genreMapper;
         this.genreRepository = genreRepository;
     }
 
@@ -29,29 +32,29 @@ public class GenreService {
         if (alreadyExistGenre.isPresent()) {
             throw new NotFoundException("Данное название уже используется");
         }
-        Genre genre = GenreMapper.mapToGenre(request);
+        Genre genre = genreMapper.mapToGenre(request);
         genre = genreRepository.save(genre);
-        return GenreMapper.mapToGenreDto(genre);
+        return genreMapper.mapToGenreDto(genre);
     }
 
     public GenreDto getGenreById(long genreId) {
         return genreRepository.findById(genreId)
-                .map(GenreMapper::mapToGenreDto)
+                .map(genreMapper::mapToGenreDto)
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + genreId));
     }
 
     public List<GenreDto> getGenres() {
         return genreRepository.findAll()
                 .stream()
-                .map(GenreMapper::mapToGenreDto)
+                .map(genreMapper::mapToGenreDto)
                 .collect(Collectors.toList());
     }
 
     public GenreDto updateGenre(long genreId, GenreDto request) {
         Genre updatedGenre = genreRepository.findById(genreId)
-                .map(genre -> GenreMapper.updateGenreFields(genre, request))
+                .map(genre -> genreMapper.updateGenreFields(genre, request))
                 .orElseThrow(() -> new NotFoundException("Жанр не найден"));
         updatedGenre = genreRepository.update(updatedGenre);
-        return GenreMapper.mapToGenreDto(updatedGenre);
+        return genreMapper.mapToGenreDto(updatedGenre);
     }
 }

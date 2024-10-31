@@ -2,13 +2,15 @@ package ru.yandex.practicum.filmorate.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 
+@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
 
-    public static User mapToUser(UserDto request) {
+    public User mapToUser(UserDto request) {
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -18,7 +20,7 @@ public class UserMapper {
         return user;
     }
 
-    public static UserDto mapToUserDto(User user) {
+    public UserDto mapToUserDto(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setName(user.getName());
@@ -29,7 +31,7 @@ public class UserMapper {
         return dto;
     }
 
-    public static User updateUserFields(User user, UserDto request) {
+    public User updateUserFields(User user, UserDto request) {
         if (request.getName() != null) {
             user.setName(request.getName());
         }

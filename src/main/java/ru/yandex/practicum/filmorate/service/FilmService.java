@@ -22,19 +22,21 @@ public class FilmService {
     private final FilmGenreRepository filmGenreRepository;
     private final GenreRepository genreRepository;
     private final RatingRepository ratingRepository;
+    private final FilmMapper filmMapper;
 
-    public FilmService(FilmRepository filmRepository, LikeRepository likeRepository, FilmGenreRepository filmGenreRepository, GenreRepository genreRepository, RatingRepository ratingRepository) {
+    public FilmService(FilmRepository filmRepository, LikeRepository likeRepository, FilmGenreRepository filmGenreRepository, GenreRepository genreRepository, RatingRepository ratingRepository, FilmMapper filmMapper) {
         this.filmRepository = filmRepository;
         this.likeRepository = likeRepository;
         this.filmGenreRepository = filmGenreRepository;
         this.genreRepository = genreRepository;
         this.ratingRepository = ratingRepository;
+        this.filmMapper = filmMapper;
     }
 
     public FilmDto createFilm(FilmDto request) {
 
         validFilmDto(request);
-        Film film = FilmMapper.mapToFilm(request);
+        Film film = filmMapper.mapToFilm(request);
         film = filmRepository.save(film);
         if (request.getGenres() != null) {
             for (GenreDto genreDto : request.getGenres()) {
@@ -44,7 +46,7 @@ public class FilmService {
                 filmGenreRepository.save(filmGenre);
             }
         }
-        return FilmMapper.mapToFilmDto(film);
+        return filmMapper.mapToFilmDto(film);
     }
 
     public FilmDto getFilmById(long filmId) {
@@ -60,7 +62,7 @@ public class FilmService {
                 film.setGenres(genres);
             }
         }
-        FilmDto filmDto = FilmMapper.mapToFilmDto(film);
+        FilmDto filmDto = filmMapper.mapToFilmDto(film);
 
         return filmDto;
     }
@@ -80,7 +82,7 @@ public class FilmService {
                     film.setGenres(genres);
                 }
             }
-            FilmDto filmDto = FilmMapper.mapToFilmDto(film);
+            FilmDto filmDto = filmMapper.mapToFilmDto(film);
             filmDtoList.add(filmDto);
         }
         return filmDtoList;
@@ -88,10 +90,10 @@ public class FilmService {
 
     public FilmDto updateFilm(long filmId, FilmDto request) {
         Film updatedFilm = filmRepository.findById(filmId)
-                .map(film -> FilmMapper.updateFilmFields(film, request))
+                .map(film -> filmMapper.updateFilmFields(film, request))
                 .orElseThrow(() -> new NotFoundException("Фильм не найден"));
         updatedFilm = filmRepository.update(updatedFilm);
-        return FilmMapper.mapToFilmDto(updatedFilm);
+        return filmMapper.mapToFilmDto(updatedFilm);
     }
 
     public FilmDto updateFilmFull(FilmDto request) {
@@ -99,10 +101,10 @@ public class FilmService {
             throw new ValidationException("ID фильма должно быть указано");
         }
         Film updatedFilm = filmRepository.findById(request.getId())
-                .map(film -> FilmMapper.updateFilmFields(film, request))
+                .map(film -> filmMapper.updateFilmFields(film, request))
                 .orElseThrow(() -> new NotFoundException("Фильм не найден"));
         updatedFilm = filmRepository.update(updatedFilm);
-        return FilmMapper.mapToFilmDto(updatedFilm);
+        return filmMapper.mapToFilmDto(updatedFilm);
     }
 
     public long getFilmLikes(long filmId) {
@@ -143,7 +145,7 @@ public class FilmService {
                     film.setGenres(genres);
                 }
             }
-            FilmDto filmDto = FilmMapper.mapToFilmDto(film);
+            FilmDto filmDto = filmMapper.mapToFilmDto(film);
             filmDtoList.add(filmDto);
         }
         return filmDtoList;

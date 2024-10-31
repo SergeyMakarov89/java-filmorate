@@ -2,13 +2,15 @@ package ru.yandex.practicum.filmorate.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.FriendshipDto;
 import ru.yandex.practicum.filmorate.model.Friendship;
 
+@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FriendshipMapper {
 
-    public static Friendship mapToFriendship(FriendshipDto request) {
+    public Friendship mapToFriendship(FriendshipDto request) {
         Friendship friendship = new Friendship();
         friendship.setUserId(request.getUserId());
         friendship.setFriendId(request.getFriendId());
@@ -17,7 +19,7 @@ public class FriendshipMapper {
         return friendship;
     }
 
-    public static FriendshipDto mapToFriendshipDto(Friendship friendship) {
+    public FriendshipDto mapToFriendshipDto(Friendship friendship) {
         FriendshipDto dto = new FriendshipDto();
         dto.setId(friendship.getId());
         dto.setUserId(friendship.getUserId());
@@ -27,7 +29,7 @@ public class FriendshipMapper {
         return dto;
     }
 
-    public static Friendship updateFriendshipFields(Friendship friendship, FriendshipDto request) {
+    public Friendship updateFriendshipFields(Friendship friendship, FriendshipDto request) {
         if (request.getUserId() != null) {
             friendship.setUserId(request.getUserId());
         }
