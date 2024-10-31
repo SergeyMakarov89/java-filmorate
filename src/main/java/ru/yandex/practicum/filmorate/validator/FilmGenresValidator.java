@@ -14,6 +14,7 @@ public class FilmGenresValidator implements ConstraintValidator<FilmGenresConstr
 
     @Autowired
     public GenreRepository genreRepository;
+
     @Override
     public void initialize(FilmGenresConstraint filmGenres) {
     }
