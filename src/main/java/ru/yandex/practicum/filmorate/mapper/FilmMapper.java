@@ -17,7 +17,6 @@ import java.util.*;
 @Component
 public class FilmMapper {
 
-
     private static final HashMap<Long, Rating> allRatings = new HashMap<>();
     private static final HashMap<Long, Genre> allGenres = new HashMap<>();
     private static final HashMap<Long, FilmGenre> allFilmGenres = new HashMap<>();

@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.dto;
 
 import lombok.Data;
+import lombok.NonNull;
+import ru.yandex.practicum.filmorate.annotation.FilmNameConstraint;
 
 import java.time.LocalDate;
 import java.util.List;

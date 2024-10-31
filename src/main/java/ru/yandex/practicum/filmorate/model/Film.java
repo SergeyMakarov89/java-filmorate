@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.annotation.FilmDescriptionConstraint;
 import ru.yandex.practicum.filmorate.annotation.FilmDurationConstraint;
+import ru.yandex.practicum.filmorate.annotation.FilmNameConstraint;
 import ru.yandex.practicum.filmorate.annotation.FilmReleaseDateConstraint;
 
 import java.time.LocalDate;

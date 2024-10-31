@@ -20,55 +20,6 @@ public class FriendshipService {
         this.friendshipRepository = friendshipRepository;
     }
 
-    public FriendshipDto createFriendship(FriendshipDto request) {
-        if (request.getUserId() == null || request.getUserId() == 0) {
-            throw new NotFoundException("ID пользователя должно быть и не может быть равным 0");
-        }
-        if (request.getFriendId() == null || request.getFriendId() == 0) {
-            throw new NotFoundException("ID друга должно быть и не может быть равным 0");
-        }
-        if (request.getIsConfirmedFriend() == null || request.getIsConfirmedFriend().isEmpty()) {
-            throw new NotFoundException("Статус дружбы должен быть");
-        }
-
-
-        Optional<Friendship> alreadyExistFriendship = friendshipRepository.findFriendshipByUser(request.getUserId(), request.getFriendId());
-        if (alreadyExistFriendship.isPresent()) {
-            throw new NotFoundException("Этот пользователь уже дружит c этим другом");
-        }
-
-        Friendship friendship = FriendshipMapper.mapToFriendship(request);
-        friendship = friendshipRepository.save(friendship);
-        return FriendshipMapper.mapToFriendshipDto(friendship);
-    }
-
-    public FriendshipDto getFriendshipByUserId(long userId) {
-        return friendshipRepository.findByUserId(userId)
-                .map(FriendshipMapper::mapToFriendshipDto)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + userId));
-    }
-
-    public List<FriendshipDto> getFriendships() {
-        return friendshipRepository.findAll()
-                .stream()
-                .map(FriendshipMapper::mapToFriendshipDto)
-                .collect(Collectors.toList());
-    }
-
-    public FriendshipDto updateFriendship(long friendshipId, FriendshipDto request) {
-        Friendship updatedFriendship = friendshipRepository.findById(friendshipId)
-                .map(friendship -> FriendshipMapper.updateFriendshipFields(friendship, request))
-                .orElseThrow(() -> new NotFoundException("Дружба не найдена"));
-        updatedFriendship = friendshipRepository.update(updatedFriendship);
-        return FriendshipMapper.mapToFriendshipDto(updatedFriendship);
-    }
-
-    public FriendshipDto getFriendshipById(long friendshipId) {
-        return friendshipRepository.findById(friendshipId)
-                .map(FriendshipMapper::mapToFriendshipDto)
-                .orElseThrow(() -> new NotFoundException("Дружба не найдена с ID: " + friendshipId));
-    }
-
     public boolean addFriend(Long userId, Long friendId) {
         if (userId == null) {
             throw new NotFoundException("ID пользователя должно быть указано");
@@ -82,12 +33,12 @@ public class FriendshipService {
             throw new NotFoundException("Такая дружба уже есть");
         }
 
-        Friendship friendship = FriendshipMapper.mapToFriendship(new FriendshipDto());
+        Friendship friendship = new Friendship();
         friendship.setUserId(userId);
         friendship.setFriendId(friendId);
         friendship.setIsConfirmedFriend("NO");
 
-        friendship = friendshipRepository.save(friendship);
+        friendshipRepository.save(friendship);
 
         return true;
     }
