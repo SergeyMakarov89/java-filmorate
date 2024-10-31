@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class FilmController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FilmDto createFilm(@RequestBody FilmDto filmRequest) {
+    public FilmDto createFilm(@Valid @RequestBody FilmDto filmRequest) {
         return filmService.createFilm(filmRequest);
     }
 

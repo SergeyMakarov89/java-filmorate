@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Like;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -35,7 +34,6 @@ public class FilmService {
 
     public FilmDto createFilm(FilmDto request) {
 
-        validFilmDto(request);
         Film film = filmMapper.mapToFilm(request);
         film = filmRepository.save(film);
         if (request.getGenres() != null) {
@@ -149,30 +147,5 @@ public class FilmService {
             filmDtoList.add(filmDto);
         }
         return filmDtoList;
-    }
-
-    public void validFilmDto(FilmDto request) {
-        if (request.getName() == null || request.getName().isEmpty()) {
-            throw new ValidationException("Название фильма должно быть указано");
-        }
-        if (request.getDescription().length() > 200) {
-            throw new ValidationException("Описание фильма больше 200 символов");
-        }
-        if (request.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Дата выхода фильма не может быть раньше 28 декабря 1895 года");
-        }
-        if (request.getDuration() <= 0) {
-            throw new ValidationException("Длительность не может быть равно 0 или меньше 0");
-        }
-        if (ratingRepository.findById(request.getMpa().getId()).isEmpty()) {
-            throw new ValidationException("Такой возрастной рейтинг отсутствует");
-        }
-        if (request.getGenres() != null) {
-            for (GenreDto genre : request.getGenres()) {
-                if (genreRepository.findById(genre.getId()).isEmpty()) {
-                    throw new ValidationException("Такого жанра не существует, добавьте жанр");
-                }
-            }
-        }
     }
 }
