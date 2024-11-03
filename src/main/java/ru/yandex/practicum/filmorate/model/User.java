@@ -8,19 +8,17 @@ import ru.yandex.practicum.filmorate.annotation.UserEmailConstraint;
 import ru.yandex.practicum.filmorate.annotation.UserLoginConstraint;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @EqualsAndHashCode(of = {"id"})
 public class User {
     private Long id;
+    private String name;
     @Email
     @UserEmailConstraint
     private String email;
     @UserLoginConstraint
     private String login;
-    private String name;
     @UserBirthdayConstraint
     private LocalDate birthday;
-    private Set<Long> friends;
 }

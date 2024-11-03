@@ -1,67 +1,83 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FriendshipService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    private final FriendshipService friendshipService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto createUser(@RequestBody UserDto userRequest) {
+        return userService.createUser(userRequest);
+    }
+
+    @PutMapping
+    public UserDto updateUserFull(@RequestBody UserDto userRequest) {
+        return userService.updateUserFull(userRequest);
     }
 
     @GetMapping
-    public Collection<User> findAll() {
-        return userService.findAll();
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserDto> getUsers() {
+        return userService.getUsers();
     }
 
     @GetMapping("/{userId}")
-    public User findUserById(@PathVariable Long userId) {
-        return userService.findUserById(userId);
-    }
-
-    @PostMapping
-    public User create(@Valid @RequestBody(required = true) User user) {
-        return userService.create(user);
-    }
-
-
-    @PutMapping
-    public User update(@Valid @RequestBody(required = true) User newUser) {
-        return userService.update(newUser);
-    }
-
-    @PutMapping("/{userId}/friends/{friendId}")
-    public Collection<User> addFriendToUser(@PathVariable Long userId,
-                                @PathVariable Long friendId) {
-        return userService.addFriendToUser(userId, friendId);
-    }
-
-    @DeleteMapping("/{userId}/friends/{friendId}")
-    public Collection<User> deleteFriend(@PathVariable Long userId,
-                                @PathVariable Long friendId) {
-        return userService.deleteFriend(userId, friendId);
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto getUserById(@PathVariable("userId") long userId) {
+        return userService.getUserById(userId);
     }
 
     @GetMapping("/{userId}/friends")
-    public Collection<User> getFriends(@PathVariable Long userId) {
-        return userService.getFriends(userId);
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> getFriendsByUserId(@PathVariable("userId") long userId) {
+        if (userService.getUserById(userId) == null) {
+            throw new NotFoundException("Пользователь не найден с ID");
+        }
+        return userService.getFriendsByUserId(userId);
+    }
+
+    @PutMapping("/{userId}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean addFriend(@PathVariable("userId") long userId, @PathVariable("friendId") long friendId) {
+        if (userService.getUserById(userId) == null || userService.getUserById(friendId) == null) {
+            throw new NotFoundException("Пользователь не найден с ID");
+        }
+        return friendshipService.addFriend(userId, friendId);
+    }
+
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean deleteFriend(@PathVariable("userId") long userId, @PathVariable("friendId") long friendId) {
+        if (userService.getUserById(userId) == null || userService.getUserById(friendId) == null) {
+            throw new NotFoundException("Пользователь не найден с ID");
+        }
+        return friendshipService.deleteFriend(userId, friendId);
     }
 
     @GetMapping("/{userId}/friends/common/{friendId}")
-    public Collection<User> getCommonFriends(@PathVariable Long userId,
-                                         @PathVariable Long friendId) {
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserDto> getCommonFriends(@PathVariable("userId") long userId, @PathVariable("friendId") long friendId) {
+        if (userService.getUserById(userId) == null || userService.getUserById(friendId) == null) {
+            throw new NotFoundException("Пользователь не найден с ID");
+        }
         return userService.getCommonFriends(userId, friendId);
     }
+
 }

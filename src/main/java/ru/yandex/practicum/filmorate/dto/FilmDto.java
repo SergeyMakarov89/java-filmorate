@@ -1,25 +1,28 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.annotation.FilmDescriptionConstraint;
-import ru.yandex.practicum.filmorate.annotation.FilmDurationConstraint;
+import ru.yandex.practicum.filmorate.annotation.FilmGenresConstraint;
+import ru.yandex.practicum.filmorate.annotation.FilmMpaConstraint;
 import ru.yandex.practicum.filmorate.annotation.FilmReleaseDateConstraint;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @Data
-@EqualsAndHashCode(of = {"id"})
-public class Film {
+public class FilmDto {
     private Long id;
+    @NotBlank
     private String name;
     @FilmDescriptionConstraint
     private String description;
     @FilmReleaseDateConstraint
     private LocalDate releaseDate;
-    @FilmDurationConstraint
+    @Positive
     private Long duration;
-    private Set<Long> genres;
-    private Long mpa;
+    @FilmGenresConstraint
+    private List<GenreDto> genres;
+    @FilmMpaConstraint
+    private RatingDto mpa;
 }
